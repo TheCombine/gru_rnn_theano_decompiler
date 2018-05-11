@@ -1,0 +1,1 @@
+Naujausias modelis - TheanoGRU4_1.py
