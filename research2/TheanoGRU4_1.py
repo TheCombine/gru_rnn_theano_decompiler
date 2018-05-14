@@ -125,6 +125,14 @@ class GRUNetwork(object):
             SeqLastState.append(s[-1])
         return total_cost/float(num_words), SeqLastState
 
+
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
 class GRUDecompiler(object):
     def __init__(self, word_dim_obj, hidden_dim_obj, learning_rate_obj, word_dim_src, hidden_dim_src, learning_rate_src):
         self.encoder = GRUNetwork(word_dim_obj, hidden_dim_obj, learning_rate_obj)
@@ -144,6 +152,7 @@ class GRUDecompiler(object):
                 if num_samples_seen % evaluate_loss_every == 0 and num_samples_seen > 0 and evaluate_loss_every > 0:
                     logging.info("%s | Current epoch: %s, samples seen: %s out of %s" % (time.ctime(), epoch, num_samples_seen, len(SeqSeqIndexObj)))
                     curr_loss, SeqLastState = self.encoder.calculate_loss(SeqSeqIndexObj, np.zeros((len(SeqSeqIndexObj), self.encoder.hidden_dim)), SeqSeqIndexTargetObj)
+                    print 'loss is number?', is_number(curr_loss)
                     logging.info("%s | Encodder loss: %s" % (time.ctime(), curr_loss))
                     if last_enc_loss != None and curr_loss > last_enc_loss:
                         self.encoder.learning_rate.set_value(self.encoder.learning_rate.get_value() * 0.9)

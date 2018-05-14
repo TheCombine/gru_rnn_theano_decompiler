@@ -1,0 +1,1 @@
+INFO:root:Tue May 15 01:44:44 2018 | wdo: 90, hdo: 256, lro: 0.05, wrs: 33, hds: 256, lrs: 0.05
