@@ -18,7 +18,7 @@ def LoadVocabulary():
             recentCreationDate = creationDate
     if recentFileName == None:
         return None
-    print 'Recent save:', recentFileName
+    print 'Recent vocabulary save:', recentFileName
     file = open('savesVocabulary/%s' % recentFileName, 'r')
     contents = file.read()
     file.close()

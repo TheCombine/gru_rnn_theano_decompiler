@@ -27,25 +27,7 @@
     <Compile Include="DataEngine.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="LSTM.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="main.py" />
-    <Compile Include="Model.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="TheanoGRU.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="TheanoGRU2.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="TheanoGRU3.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="TheanoGRU4.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="TheanoGRU4_1.py">
       <SubType>Code</SubType>
     </Compile>
