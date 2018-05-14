@@ -10,6 +10,8 @@ from datetime import datetime
 
 #theano.config.optimizer='None'
 #theano.config.exception_verbosity='high'
+theano.config.device='cuda'
+theano.config.floatX='float32'
 t_start = None
 
 def PrintTime(message, t_start):

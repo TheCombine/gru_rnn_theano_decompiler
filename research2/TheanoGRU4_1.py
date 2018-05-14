@@ -142,7 +142,7 @@ class GRUDecompiler(object):
             logging.info("%s | Beginnig epoch No.%s" % (time.ctime(), epoch))
             for SeqIndexObj, SeqIndexTargetObj, SeqIndexSrc, SeqIndexTargetSrc in zip(SeqSeqIndexObj, SeqSeqIndexTargetObj, SeqSeqIndexSrc, SeqSeqIndexTargetSrc):
                 if num_samples_seen % evaluate_loss_every == 0 and num_samples_seen > 0 and evaluate_loss_every > 0:
-                    logging.info("%s | Current epoch: %s, samples seen: %s" % (time.ctime(), epoch, num_samples_seen))
+                    logging.info("%s | Current epoch: %s, samples seen: %s out of %s" % (time.ctime(), epoch, num_samples_seen, len(SeqSeqIndexObj)))
                     curr_loss, SeqLastState = self.encoder.calculate_loss(SeqSeqIndexObj, np.zeros((len(SeqSeqIndexObj), self.encoder.hidden_dim)), SeqSeqIndexTargetObj)
                     logging.info("%s | Encodder loss: %s" % (time.ctime(), curr_loss))
                     if last_enc_loss != None and curr_loss > last_enc_loss:
