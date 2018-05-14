@@ -241,8 +241,8 @@ def LoadModel(word_dim_obj, hidden_dim_obj, learning_rate_obj, word_dim_src, hid
         model.decoder.V.set_value(V_dec)
         model.decoder.c.set_value(c_dec)
         print 'LOADED model:'
-        print '%s, %s, %s, %s, %s, %s, %s' % (np.shape(E_enc), np.shape(U_enc), np.shape(W_enc), np.shape(V_enc), np.shape(b_enc), np.shape(c_enc), lr_enc)
-        print '%s, %s, %s, %s, %s, %s, %s' % (np.shape(E_dec), np.shape(U_dec), np.shape(W_dec), np.shape(V_dec), np.shape(b_dec), np.shape(c_dec), lr_dec)
+        print '%s, %s, %s, %s, %s, %s, %s' % (np.shape(E_enc), np.shape(U_enc), np.shape(W_enc), np.shape(V_enc), np.shape(b_enc), np.shape(c_enc), learning_rate_obj)
+        print '%s, %s, %s, %s, %s, %s, %s' % (np.shape(E_dec), np.shape(U_dec), np.shape(W_dec), np.shape(V_dec), np.shape(b_dec), np.shape(c_dec), learning_rate_src)
     else:
         print 'CREATED new model'
     return model
