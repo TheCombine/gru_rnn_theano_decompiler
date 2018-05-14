@@ -37,11 +37,9 @@ decompiler = LoadModel(word_dim_obj=len(voc.token_to_index_obj),
 t_start = PrintTime('Loading data', t_start)
 de = DataEngine()
 
-SeqDataToLoad = [o1valid]
+SeqDataToLoad = [o1train, o2train, o3train]
 for DataToLoad in SeqDataToLoad:
     SeqSeqTokenObj, SeqSeqTokenSrc, SeqStringAli = de.LoadData(DataToLoad)
-
-    o1valid = o1valid[:100]
 
     #t_start = PrintTime('converting tokens to indices', t_start)
     SeqSeqIndexObj = voc.ToIndicesObj(SeqSeqTokenObj)

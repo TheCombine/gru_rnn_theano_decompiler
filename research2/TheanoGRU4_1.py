@@ -151,15 +151,16 @@ class GRUDecompiler(object):
             for SeqIndexObj, SeqIndexTargetObj, SeqIndexSrc, SeqIndexTargetSrc in zip(SeqSeqIndexObj, SeqSeqIndexTargetObj, SeqSeqIndexSrc, SeqSeqIndexTargetSrc):
                 if num_samples_seen % evaluate_loss_every == 0 and num_samples_seen > 0 and evaluate_loss_every > 0:
                     logging.info("%s | Current epoch: %s, samples seen: %s out of %s" % (time.ctime(), epoch, num_samples_seen, len(SeqSeqIndexObj)))
-                    curr_loss, SeqLastState = self.encoder.calculate_loss(SeqSeqIndexObj, np.zeros((len(SeqSeqIndexObj), self.encoder.hidden_dim)), SeqSeqIndexTargetObj)
+                    samples = np.random.choice(SeqSeqIndexObj, 500)
+                    curr_loss, SeqLastState = self.encoder.calculate_loss(SeqSeqIndexObj[samples], np.zeros((len(SeqSeqIndexObj), self.encoder.hidden_dim)), SeqSeqIndexTargetObj[samples])
                     print 'loss is number?', is_number(curr_loss)
-                    logging.info("%s | Encodder loss: %s" % (time.ctime(), curr_loss))
+                    logging.info("%s | Encoder loss: %s" % (time.ctime(), curr_loss))
                     if last_enc_loss != None and curr_loss > last_enc_loss:
                         self.encoder.learning_rate.set_value(self.encoder.learning_rate.get_value() * 0.9)
                         logging.info("%s | Lowering encoder learning rate to: %s" % (time.ctime(), self.encoder.learning_rate.get_value()))
                     last_enc_loss = curr_loss
 
-                    curr_loss = self.decoder.calculate_loss(SeqSeqIndexSrc, SeqLastState, SeqSeqIndexTargetSrc)[0]
+                    curr_loss = self.decoder.calculate_loss(SeqSeqIndexSrc[samples], SeqLastState, SeqSeqIndexTargetSrc[samples])[0]
                     logging.info("%s | Decoder loss: %s" % (time.ctime(), curr_loss))
                     if last_dec_loss != None and curr_loss > last_dec_loss:
                         self.decoder.learning_rate.set_value(self.decoder.learning_rate.get_value() * 0.9)
