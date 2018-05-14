@@ -1,6 +1,6 @@
 from DataEngine import *
 from Vocabulary import *
-from TheanoGRU4_1 import *
+#from TheanoGRU4_1 import *
 
 import sys
 import os
@@ -34,11 +34,11 @@ decompiler = LoadModel(word_dim_obj=len(voc.token_to_index_obj),
                         hidden_dim_src=256, 
                         learning_rate_src=0.05)
 
-t_start = PrintTime('Loading data', t_start)
 de = DataEngine()
 
 SeqDataToLoad = [o1train, o2train, o3train]
 for DataToLoad in SeqDataToLoad:
+    t_start = PrintTime('Training', t_start)
     SeqSeqTokenObj, SeqSeqTokenSrc, SeqStringAli = de.LoadData(DataToLoad)
 
     #t_start = PrintTime('converting tokens to indices', t_start)
@@ -71,14 +71,13 @@ for DataToLoad in SeqDataToLoad:
 
     #t_start = PrintTime('Starting training', t_start)
     decompiler.train(SeqSeqIndexObj, SeqSeqIndexObjClone, SeqSeqIndexSrc, SeqSeqIndexSrcClone, 100, 256)
-
-    '''
+'''
     t_start = PrintTime('Decompiling', t_start)
     print 'Excepted shape: ', np.shape(SeqSeqIndexSrcClone[0])
     print 'Excepted: ', SeqSeqIndexSrcClone[0]
     w_pred = decompiler.decompile(SeqSeqIndexObj[0], SeqSeqIndexObjClone[0])
     print 'Prediction: ', w_pred
-    '''
+'''
 
 PrintTime('Ending Program', t_start)
 

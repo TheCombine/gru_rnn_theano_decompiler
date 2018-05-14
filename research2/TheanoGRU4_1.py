@@ -151,7 +151,7 @@ class GRUDecompiler(object):
             for SeqIndexObj, SeqIndexTargetObj, SeqIndexSrc, SeqIndexTargetSrc in zip(SeqSeqIndexObj, SeqSeqIndexTargetObj, SeqSeqIndexSrc, SeqSeqIndexTargetSrc):
                 if num_samples_seen % evaluate_loss_every == 0 and num_samples_seen > 0 and evaluate_loss_every > 0:
                     logging.info("%s | Current epoch: %s, samples seen: %s out of %s" % (time.ctime(), epoch, num_samples_seen, len(SeqSeqIndexObj)))
-                    samples = np.random.choice(SeqSeqIndexObj, 500)
+                    samples = np.random.choice(range(len(SeqSeqIndexObj)), 500, replace=False)
                     curr_loss, SeqLastState = self.encoder.calculate_loss(SeqSeqIndexObj[samples], np.zeros((len(SeqSeqIndexObj), self.encoder.hidden_dim)), SeqSeqIndexTargetObj[samples])
                     print 'loss is number?', is_number(curr_loss)
                     logging.info("%s | Encoder loss: %s" % (time.ctime(), curr_loss))
