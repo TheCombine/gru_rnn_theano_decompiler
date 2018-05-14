@@ -11,8 +11,6 @@ from theano import function, config, shared, tensor
 
 #theano.config.optimizer='None'
 #theano.config.exception_verbosity='high'
-theano.config.device='cuda'
-theano.config.floatX='float32'
 
 vlen = 10 * 30 * 768  # 10 x #cores x # threads per core
 iters = 1000
