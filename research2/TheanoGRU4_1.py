@@ -152,7 +152,8 @@ class GRUDecompiler(object):
                 if num_samples_seen % evaluate_loss_every == 0 and num_samples_seen > 0 and evaluate_loss_every > 0:
                     logging.info("%s | Current epoch: %s, samples seen: %s out of %s" % (time.ctime(), epoch, num_samples_seen, len(SeqSeqIndexObj)))
                     samples = np.random.choice(range(len(SeqSeqIndexObj)), 500, replace=False)
-                    curr_loss, SeqLastState = self.encoder.calculate_loss(SeqSeqIndexObj[samples], np.zeros((len(SeqSeqIndexObj), self.encoder.hidden_dim)), SeqSeqIndexTargetObj[samples])
+                    
+                    curr_loss, SeqLastState = self.encoder.calculate_loss([SeqSeqIndexObj[i] for i in samples], np.zeros((len(SeqSeqIndexObj), self.encoder.hidden_dim)), [SeqSeqIndexTargetObj[i] for i in samples])
                     print 'loss is number?', is_number(curr_loss)
                     logging.info("%s | Encoder loss: %s" % (time.ctime(), curr_loss))
                     if last_enc_loss != None and curr_loss > last_enc_loss:
@@ -160,7 +161,7 @@ class GRUDecompiler(object):
                         logging.info("%s | Lowering encoder learning rate to: %s" % (time.ctime(), self.encoder.learning_rate.get_value()))
                     last_enc_loss = curr_loss
 
-                    curr_loss = self.decoder.calculate_loss(SeqSeqIndexSrc[samples], SeqLastState, SeqSeqIndexTargetSrc[samples])[0]
+                    curr_loss, SeqLastState = self.decoder.calculate_loss([SeqSeqIndexSrc[i] for i in samples], SeqLastState, [SeqSeqIndexTargetSrc[i] for i in samples])
                     logging.info("%s | Decoder loss: %s" % (time.ctime(), curr_loss))
                     if last_dec_loss != None and curr_loss > last_dec_loss:
                         self.decoder.learning_rate.set_value(self.decoder.learning_rate.get_value() * 0.9)
