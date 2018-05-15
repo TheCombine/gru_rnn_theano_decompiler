@@ -142,20 +142,20 @@ class GRUDecompiler(object):
             logging.info("%s | Beginnig epoch No.%s" % (time.ctime(), epoch))
             for SeqIndexObj, SeqIndexTargetObj, SeqIndexSrc, SeqIndexTargetSrc in zip(SeqSeqIndexObj, SeqSeqIndexTargetObj, SeqSeqIndexSrc, SeqSeqIndexTargetSrc):
                 if num_samples_seen % evaluate_loss_every == 0 and num_samples_seen > 0 and evaluate_loss_every > 0:
-                    logging.info("%s | Current epoch: %s, samples seen: %s out of %s" % (time.ctime(), epoch, num_samples_seen, len(SeqSeqIndexObj)))
+                    logging.info("%s | Epoch: %s, samples seen: %s out of %s" % (time.ctime(), epoch, num_samples_seen, len(SeqSeqIndexObj) * nepoch))
                     samples = np.random.choice(range(len(SeqSeqIndexObj)), min(len(SeqSeqIndexObj), 516), replace=False)
                     
                     curr_loss, SeqLastState = self.encoder.calculate_loss([SeqSeqIndexObj[i] for i in samples], np.zeros((len(SeqSeqIndexObj), self.encoder.hidden_dim)), [SeqSeqIndexTargetObj[i] for i in samples])
                     logging.info("%s | Encoder loss: %s" % (time.ctime(), curr_loss))
                     if last_enc_loss != None and curr_loss > last_enc_loss:
-                        self.encoder.learning_rate.set_value(self.encoder.learning_rate.get_value() * 0.9)
+                        self.encoder.learning_rate.set_value(self.encoder.learning_rate.get_value() * 0.7)
                         logging.info("%s | Lowering encoder learning rate to: %s" % (time.ctime(), self.encoder.learning_rate.get_value()))
                     last_enc_loss = curr_loss
 
                     curr_loss, SeqLastState = self.decoder.calculate_loss([SeqSeqIndexSrc[i] for i in samples], SeqLastState, [SeqSeqIndexTargetSrc[i] for i in samples])
                     logging.info("%s | Decoder loss: %s" % (time.ctime(), curr_loss))
                     if last_dec_loss != None and curr_loss > last_dec_loss:
-                        self.decoder.learning_rate.set_value(self.decoder.learning_rate.get_value() * 0.9)
+                        self.decoder.learning_rate.set_value(self.decoder.learning_rate.get_value() * 0.7)
                         logging.info("%s | Lowering decoder learning rate to: %s" % (time.ctime(), self.decoder.learning_rate.get_value()))
                     last_dec_loss = curr_loss
 
@@ -199,7 +199,7 @@ class GRUDecompiler(object):
             c_dec=self.decoder.c.get_value(),
             lr_dec =self.decoder.learning_rate.get_value()
             )
-        logging.info("%s | Saved model." % (time.ctime()))
+        #logging.info("%s | Saved model." % (time.ctime()))
         #print 'Saved:'
         #print '%s, %s, %s, %s, %s, %s, %s' % (np.shape(self.encoder.E.get_value()), np.shape(self.encoder.U.get_value()), np.shape(self.encoder.W.get_value()), np.shape(self.encoder.b.get_value()), np.shape(self.encoder.W.get_value()), np.shape(self.encoder.c.get_value()), self.encoder.learning_rate.get_value())
         #print '%s, %s, %s, %s, %s, %s, %s' % (np.shape(self.decoder.E.get_value()), np.shape(self.decoder.U.get_value()), np.shape(self.decoder.W.get_value()), np.shape(self.decoder.b.get_value()), np.shape(self.decoder.W.get_value()), np.shape(self.decoder.c.get_value()), self.decoder.learning_rate.get_value())
