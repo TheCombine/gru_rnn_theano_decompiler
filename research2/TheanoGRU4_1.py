@@ -125,14 +125,6 @@ class GRUNetwork(object):
             SeqLastState.append(s[-1])
         return total_cost/float(num_words), SeqLastState
 
-
-def is_number(s):
-    try:
-        float(s)
-        return True
-    except ValueError:
-        return False
-
 class GRUDecompiler(object):
     def __init__(self, word_dim_obj, hidden_dim_obj, learning_rate_obj, word_dim_src, hidden_dim_src, learning_rate_src):
         self.encoder = GRUNetwork(word_dim_obj, hidden_dim_obj, learning_rate_obj)
@@ -151,7 +143,7 @@ class GRUDecompiler(object):
             for SeqIndexObj, SeqIndexTargetObj, SeqIndexSrc, SeqIndexTargetSrc in zip(SeqSeqIndexObj, SeqSeqIndexTargetObj, SeqSeqIndexSrc, SeqSeqIndexTargetSrc):
                 if num_samples_seen % evaluate_loss_every == 0 and num_samples_seen > 0 and evaluate_loss_every > 0:
                     logging.info("%s | Current epoch: %s, samples seen: %s out of %s" % (time.ctime(), epoch, num_samples_seen, len(SeqSeqIndexObj)))
-                    samples = np.random.choice(range(len(SeqSeqIndexObj)), 500, replace=False)
+                    samples = np.random.choice(range(len(SeqSeqIndexObj)), 516, replace=False)
                     
                     curr_loss, SeqLastState = self.encoder.calculate_loss([SeqSeqIndexObj[i] for i in samples], np.zeros((len(SeqSeqIndexObj), self.encoder.hidden_dim)), [SeqSeqIndexTargetObj[i] for i in samples])
                     print 'loss is number?', is_number(curr_loss)
@@ -209,9 +201,9 @@ class GRUDecompiler(object):
             lr_dec =self.decoder.learning_rate.get_value()
             )
         logging.info("%s | Saved model." % (time.ctime()))
-        print 'Saved:'
-        print '%s, %s, %s, %s, %s, %s, %s' % (np.shape(self.encoder.E.get_value()), np.shape(self.encoder.U.get_value()), np.shape(self.encoder.W.get_value()), np.shape(self.encoder.b.get_value()), np.shape(self.encoder.W.get_value()), np.shape(self.encoder.c.get_value()), self.encoder.learning_rate.get_value())
-        print '%s, %s, %s, %s, %s, %s, %s' % (np.shape(self.decoder.E.get_value()), np.shape(self.decoder.U.get_value()), np.shape(self.decoder.W.get_value()), np.shape(self.decoder.b.get_value()), np.shape(self.decoder.W.get_value()), np.shape(self.decoder.c.get_value()), self.decoder.learning_rate.get_value())
+        #print 'Saved:'
+        #print '%s, %s, %s, %s, %s, %s, %s' % (np.shape(self.encoder.E.get_value()), np.shape(self.encoder.U.get_value()), np.shape(self.encoder.W.get_value()), np.shape(self.encoder.b.get_value()), np.shape(self.encoder.W.get_value()), np.shape(self.encoder.c.get_value()), self.encoder.learning_rate.get_value())
+        #print '%s, %s, %s, %s, %s, %s, %s' % (np.shape(self.decoder.E.get_value()), np.shape(self.decoder.U.get_value()), np.shape(self.decoder.W.get_value()), np.shape(self.decoder.b.get_value()), np.shape(self.decoder.W.get_value()), np.shape(self.decoder.c.get_value()), self.decoder.learning_rate.get_value())
 
 def LoadModel(word_dim_obj, hidden_dim_obj, learning_rate_obj, word_dim_src, hidden_dim_src, learning_rate_src):
     fileNames = listdir('savesModel/')
