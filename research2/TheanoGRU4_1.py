@@ -12,7 +12,7 @@ class GRUNetwork(object):
         self.word_dim = word_dim
         self.hidden_dim = hidden_dim
         self.learning_rate = theano.shared(name='learning_rate', value=learning_rate)
-        self.bptt_truncate = 100
+        self.bptt_truncate = 64
 
         # token weights
         E = np.random.uniform(-np.sqrt(1./word_dim), np.sqrt(1./word_dim), (hidden_dim, word_dim))
@@ -71,16 +71,16 @@ class GRUNetwork(object):
         self.ForwardProp = theano.function([SeqIndex, InitialHiddenState], [s])
         
         ##### cost function #####
-        coost = T.sum(T.nnet.categorical_crossentropy(o, SeqIndexTarget))
-        self.Coost = theano.function([SeqIndex, InitialHiddenState, SeqIndexTarget], [coost, s])
+        cost = T.sum(T.nnet.categorical_crossentropy(o, SeqIndexTarget))
+        self.Cost = theano.function([SeqIndex, InitialHiddenState, SeqIndexTarget], [cost, s])
 
         ##### train function #####
-        dE = T.grad(coost, self.E)
-        dU = T.grad(coost, self.U)
-        dW = T.grad(coost, self.W)
-        db = T.grad(coost, self.b)
-        dV = T.grad(coost, self.V)
-        dc = T.grad(coost, self.c)
+        dE = T.grad(cost, self.E)
+        dU = T.grad(cost, self.U)
+        dW = T.grad(cost, self.W)
+        db = T.grad(cost, self.b)
+        dV = T.grad(cost, self.V)
+        dc = T.grad(cost, self.c)
 
         self.SGDStep = theano.function(
             [SeqIndex, InitialHiddenState, SeqIndexTarget],
@@ -105,7 +105,7 @@ class GRUNetwork(object):
 
         [s_pred, o_pred], updates_pred = theano.scan(
             PredictionForwardProp,
-            # truncate_gradient=self.bptt_truncate,
+            truncate_gradient=self.bptt_truncate,
             outputs_info=[dict(initial=InitialHiddenState),
                           dict(initial=T.zeros(self.word_dim))
                           ],
@@ -118,12 +118,12 @@ class GRUNetwork(object):
     def calculate_loss(self, SeqSeqIndex, SeqInitialState, SeqSeqIndexTarget):
         SeqLastState = []
         num_words = np.sum([len(SeqIndex) for SeqIndex in SeqSeqIndex])
-        total_cost = 0.
+        total_cost = 0
         for SeqIndex, InitialState, SeqIndexTarget in zip(SeqSeqIndex, SeqInitialState, SeqSeqIndexTarget):
-            coost, s = self.Coost(SeqIndex, InitialState, SeqIndexTarget)
-            total_cost += coost
+            cost, s = self.Cost(SeqIndex, InitialState, SeqIndexTarget)
+            total_cost += cost
             SeqLastState.append(s[-1])
-        return total_cost/float(num_words), SeqLastState
+        return total_cost/num_words, SeqLastState
 
 class GRUDecompiler(object):
     def __init__(self, word_dim_obj, hidden_dim_obj, learning_rate_obj, word_dim_src, hidden_dim_src, learning_rate_src):
@@ -143,10 +143,9 @@ class GRUDecompiler(object):
             for SeqIndexObj, SeqIndexTargetObj, SeqIndexSrc, SeqIndexTargetSrc in zip(SeqSeqIndexObj, SeqSeqIndexTargetObj, SeqSeqIndexSrc, SeqSeqIndexTargetSrc):
                 if num_samples_seen % evaluate_loss_every == 0 and num_samples_seen > 0 and evaluate_loss_every > 0:
                     logging.info("%s | Current epoch: %s, samples seen: %s out of %s" % (time.ctime(), epoch, num_samples_seen, len(SeqSeqIndexObj)))
-                    samples = np.random.choice(range(len(SeqSeqIndexObj)), 516, replace=False)
+                    samples = np.random.choice(range(len(SeqSeqIndexObj)), min(len(SeqSeqIndexObj), 516), replace=False)
                     
                     curr_loss, SeqLastState = self.encoder.calculate_loss([SeqSeqIndexObj[i] for i in samples], np.zeros((len(SeqSeqIndexObj), self.encoder.hidden_dim)), [SeqSeqIndexTargetObj[i] for i in samples])
-                    print 'loss is number?', is_number(curr_loss)
                     logging.info("%s | Encoder loss: %s" % (time.ctime(), curr_loss))
                     if last_enc_loss != None and curr_loss > last_enc_loss:
                         self.encoder.learning_rate.set_value(self.encoder.learning_rate.get_value() * 0.9)
@@ -171,7 +170,7 @@ class GRUDecompiler(object):
     def calculate_loss(self, SeqSeqIndexObj, SeqSeqIndexTargetObj, SeqSeqIndexSrc, SeqSeqIndexTargetSrc):
         loss, SeqHiddenState = self.encoder.calculate_loss(SeqSeqIndexObj, np.zeros((len(SeqSeqIndexObj), self.encoder.hidden_dim)), SeqSeqIndexTargetObj)
         total_loss = loss
-        loss, SeqHiddenState = self.decoder.calculate_loss(SeqSeqIndexSrc, np.zeros((len(SeqSeqIndexSrc), self.decoder.hidden_dim)), SeqSeqIndexTargetSrc)
+        loss, SeqHiddenState = self.decoder.calculate_loss(SeqSeqIndexSrc, SeqHiddenState, SeqSeqIndexTargetSrc)
         total_loss += loss
         return total_loss / 2
 

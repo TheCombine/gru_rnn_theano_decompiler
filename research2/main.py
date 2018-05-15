@@ -1,6 +1,6 @@
 from DataEngine import *
 from Vocabulary import *
-#from TheanoGRU4_1 import *
+from TheanoGRU4_1 import *
 
 import sys
 import os
@@ -35,7 +35,6 @@ decompiler = LoadModel(word_dim_obj=len(voc.token_to_index_obj),
                         learning_rate_src=0.05)
 
 de = DataEngine()
-
 SeqDataToLoad = [o1train, o2train, o3train]
 for DataToLoad in SeqDataToLoad:
     t_start = PrintTime('Training', t_start)
@@ -70,7 +69,7 @@ for DataToLoad in SeqDataToLoad:
     #print 'Longest sequence: ', longest
 
     #t_start = PrintTime('Starting training', t_start)
-    decompiler.train(SeqSeqIndexObj, SeqSeqIndexObjClone, SeqSeqIndexSrc, SeqSeqIndexSrcClone, 100, 256)
+    decompiler.train(SeqSeqIndexObj, SeqSeqIndexObjClone, SeqSeqIndexSrc, SeqSeqIndexSrcClone, 2, 256)
 '''
     t_start = PrintTime('Decompiling', t_start)
     print 'Excepted shape: ', np.shape(SeqSeqIndexSrcClone[0])
