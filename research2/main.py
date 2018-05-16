@@ -19,6 +19,8 @@ def PrintTime(message, t_start):
     print '%s: %s' % (message, time.ctime())
     return time.time()
 
+de = DataEngine()
+
 t_start = PrintTime('Loading vocab', t_start)
 voc = LoadVocabulary()
 if voc == None:
@@ -34,7 +36,7 @@ decompiler = LoadModel(word_dim_obj=len(voc.token_to_index_obj),
                         hidden_dim_src=256, 
                         learning_rate_src=0.05)
 
-de = DataEngine()
+
 SeqDataToLoad = [o1train, o2train, o3train]
 for DataToLoad in SeqDataToLoad:
     t_start = PrintTime('Training', t_start)
@@ -70,13 +72,23 @@ for DataToLoad in SeqDataToLoad:
 
     #t_start = PrintTime('Starting training', t_start)
     decompiler.train(SeqSeqIndexObj, SeqSeqIndexObjClone, SeqSeqIndexSrc, SeqSeqIndexSrcClone, 2, 256)
+decompiler.SaveModel()
+
 '''
-    t_start = PrintTime('Decompiling', t_start)
-    print 'Excepted shape: ', np.shape(SeqSeqIndexSrcClone[0])
-    print 'Excepted: ', SeqSeqIndexSrcClone[0]
-    w_pred = decompiler.decompile(SeqSeqIndexObj[0], SeqSeqIndexObjClone[0])
-    print 'Prediction: ', w_pred
-'''
+SeqSeqTokenObj, SeqSeqTokenSrc, SeqStringAli = de.LoadData(o1test)
+
+SeqSeqIndexObj = voc.SeqSeqTokenObjToIndices(SeqSeqTokenObj)
+SeqSeqIndexSrc = voc.SeqSeqTokenSrcToIndices(SeqSeqTokenSrc)
+
+SeqSeqIndexObjClone = voc.CloneSeqSeqX(SeqSeqIndexObj)
+SeqSeqIndexSrcClone = voc.CloneSeqSeqX(SeqSeqIndexSrc)
+
+t_start = PrintTime('Decompiling', t_start)
+for x in arange(10):
+    SeqTokenSrcTruth = voc.SeqIndexSrcToTokens(SeqSeqIndexSrcClone[x])
+    w_pred = decompiler.decompile(SeqSeqIndexObj[x], len(SeqSeqIndexSrcClone[x]) * 2)
+    SeqTokenSrcPred = voc.SeqIndexSrcToTokens(w_pred)
+    voc.PrintPrediction(SeqTokenSrcTruth, SeqTokenSrcPred)
 
 PrintTime('Ending Program', t_start)
-
+'''

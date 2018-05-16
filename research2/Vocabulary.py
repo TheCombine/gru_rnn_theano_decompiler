@@ -84,16 +84,16 @@ class Vocabulary(object):
                     token_to_index[Token] = i
                     index_to_token.insert(i, Token)
 
-    def ToIndicesObj(self, SeqSeqTokenObj):
+    def SeqSeqTokenObjToIndices(self, SeqSeqTokenObj):
         """out: SeqSeqIndexObj"""
         return self._toIndices(SeqSeqTokenObj, self.token_to_index_obj)
 
-    def ToIndicesSrc(self, SeqSeqTokenSrc):
+    def SeqSeqTokenSrcToIndices(self, SeqSeqTokenSrc):
         """out: SeqSeqIndexSrc"""
         return self._toIndices(SeqSeqTokenSrc, self.token_to_index_src)
 
     def _toIndices(self, SeqSeqToken, token_to_index):
-        """Called by ToIndicesObj and ToIndicesSrc"""
+        """Called by SeqSeqToken(Obj/Src)ToIndices"""
         SeqSeqIndex = []
         for SeqToken in SeqSeqToken:
             SeqIndex = []
@@ -103,26 +103,24 @@ class Vocabulary(object):
             SeqSeqIndex.append(SeqIndex)
         return SeqSeqIndex
 
-    def ToTokensObj(self, SeqSeqIndexObj):
-        """out: SeqSeqTokenObj"""
-        return self._toTokens(SeqSeqIndexObj, self.index_to_token_obj)
+    def SeqIndexObjToTokens(self, SeqIndexObj):
+        """out: SeqTokenObj"""
+        return self._toTokens(SeqIndexObj, self.index_to_token_obj)
 
-    def ToTokensSrc(self, SeqSeqIndexSrc):
-        """out: SeqSeqTokenSrc"""
-        return self._toTokens(SeqSeqIndexSrc, self.index_to_token_src)
+    def SeqIndexSrcToTokens(self, SeqIndexSrc):
+        """out: SeqTokenSrc"""
+        return self._toTokens(SeqIndexSrc, self.index_to_token_src)
 
-    def _toTokens(self, SeqSeqIndex, index_to_token):
-        """Called by ToTokensObj and ToTokensSrc"""
-        SeqSeqToken = []
-        for SeqIndex in SeqSeqIndex:
-            SeqToken = []
-            for Index in SeqIndex:
-                SeqToken.append(index_to_token[Index])
-            #del SeqToken[-1]
-            SeqSeqToken.append(SeqToken)
-        return SeqSeqToken
+    def _toTokens(self, SeqIndex, index_to_token):
+        """Called by SeqIndex(Obj/Src)ToTokens"""
+        SeqToken = []
+        for Index in SeqIndex:
+            if index_to_token[Index] == '<e>':
+                break
+            SeqToken.append(index_to_token[Index])
+        return SeqToken
 
-    def CloneSeqSeq(self, SeqSeqX):
+    def CloneSeqSeqX(self, SeqSeqX):
         """out: clone of SeqSeqX"""
         SeqSeqXClone = []
         for SeqX in SeqSeqX:
@@ -131,3 +129,24 @@ class Vocabulary(object):
                 SeqXClone.append(X)
             SeqSeqXClone.append(SeqXClone)
         return SeqSeqXClone
+
+    def ConcatSeqTokensX(self, SeqTokenX):
+        String = ''
+        for Token in SeqTokenX:
+            if Token == '{' or Token == '}':
+                String += '\n'
+            String += Token + ' '
+            if Token == '{' or Token == '}':
+                String += '\n'
+        return String
+
+    def PrintPrediction(self, SeqTokenTruth, SeqTokenPred):
+        file = open('predictions/prediction.txt', 'a')
+        StringTruth = self.ConcatSeqTokensX(SeqTokenTruth)
+        StringPred = self.ConcatSeqTokensX(SeqTokenPred)
+        print>>file, 'Expected:'
+        print>>file, StringTruth
+        print>>file, 'Prediction:'
+        print>>file, StringPred
+        print>>file, "\r\n\r\n"
+        file.close()

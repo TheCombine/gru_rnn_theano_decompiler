@@ -3738,3 +3738,4 @@ INFO:root:Wed May 16 05:31:44 2018 | Epoch: 1, samples seen: 79616 out of 79622
 INFO:root:Wed May 16 05:31:48 2018 | Encoder loss: 1.24786782313
 INFO:root:Wed May 16 05:31:53 2018 | Decoder loss: 0.525883559738
 INFO:root:Wed May 16 05:31:53 2018 | Lowering decoder learning rate to: 9.53591850616e-74
+

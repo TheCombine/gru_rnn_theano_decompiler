@@ -174,10 +174,10 @@ class GRUDecompiler(object):
         total_loss += loss
         return total_loss / 2
 
-    def decompile(self, SeqIndexObj, SeqIndexTargetObj):
+    def decompile(self, SeqIndexObj, MaxPredLen):
         lastEncoderState = self.encoder.ForwardProp(SeqIndexObj, np.zeros(self.encoder.hidden_dim))[0][-1] #remove tensor wrapper-bullshit and select last state
-        o_pred = self.decoder.Predict(lastEncoderState, 10)
-        w_pred = np.argmax(o_pred, axis=1)
+        o_pred = self.decoder.Predict(lastEncoderState, MaxPredLen)
+        w_pred = np.argmax(o_pred, axis=2)[0]
         return w_pred
 
     def SaveModel(self):
